@@ -1,4 +1,4 @@
-# 🧠 ClearDSA – Your Local AI Copilot for Proctored DSA Rounds (For Fun 😉)
+# 🧠 CrackDSA – Your Local AI Copilot for Proctored DSA Rounds (For Fun 😉)
 
 **ClearDSA** is a macOS-native desktop chat assistant built with Flutter. It connects to local Ollama LLMs like `llama3`, `mistral`, and `codellama` to provide discreet, offline-friendly help for Data Structures & Algorithms (DSA) challenges—even during proctored coding rounds (strictly for "educational purposes" of course).
 
