@@ -38,6 +38,8 @@ dependencies:
   bitsdojo_window: ^0.1.6
   ollama: ^1.0.4
   http: ^1.4.0
+  web_socket_channel: ^3.0.3
+  hotkey_manager: ^0.2.3
 
 dev_dependencies:
   flutter_test:

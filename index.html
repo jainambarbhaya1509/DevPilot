@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Global Mouse & Clipboard Tracker</title>
+  <style>
+    body {
+      margin: 20px;
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    input, textarea {
+      width: 300px;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    #log {
+      background-color: #111;
+      color: #0f0;
+      font-family: monospace;
+      padding: 10px;
+      height: 250px;
+      overflow-y: auto;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🖱️ Global Mouse, Focus & Clipboard Tracker</h2>
+
+  <input type="text" placeholder="Focus me, type or paste..." />
+  <textarea rows="4" placeholder="Try copy, paste or focus events here"></textarea>
+
+  <h3>Event Log:</h3>
+  <div id="log"></div>
+
+  <script>
+    const logDiv = document.getElementById('log');
+
+    function log(msg) {
+      const time = new Date().toLocaleTimeString();
+      logDiv.textContent += `[${time}] ${msg}\n`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    // Mouse tracking
+    document.addEventListener('click', (e) => {
+      log(`🔘 Click at (${e.clientX}, ${e.clientY}) on ${e.target.tagName}`);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      log(`🖱️ Mouse moved to (${e.clientX}, ${e.clientY})`);
+    });
+
+    document.addEventListener('mouseenter', () => log('➡️ Mouse entered document'), true);
+    document.addEventListener('mouseleave', () => log('⬅️ Mouse left document'), true);
+
+    // Focus tracking
+    document.addEventListener('focusin', (e) => {
+      log(`🟢 Focused on ${e.target.tagName}`);
+    });
+
+    document.addEventListener('focusout', (e) => {
+      log(`🔴 Lost focus from ${e.target.tagName}`);
+    });
+
+    // Clipboard events
+    document.addEventListener('copy', (e) => {
+      log('📋 Content copied');
+    });
+
+    document.addEventListener('cut', (e) => {
+      log('✂️ Content cut');
+    });
+
+    document.addEventListener('paste', (e) => {
+      log('📥 Content pasted');
+    });
+
+    // Optional: Key press tracking
+    document.addEventListener('keydown', (e) => {
+      log(`⌨️ Key down: ${e.key}`);
+    });
+  </script>
+
+</body>
+</html>

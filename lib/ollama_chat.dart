@@ -4,6 +4,7 @@ import 'package:window_manager/window_manager.dart';
 import 'model_selector.dart';
 import 'connection_status.dart';
 import 'code_block_widget.dart';
+import 'hover_text_service.dart';
 
 class Message {
   final String content;
@@ -35,12 +36,25 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
   late AnimationController _cursorController;
   late Animation<double> _fadeAnimation;
   late Ollama _ollama;
+  late final HoverTextService _hoverTextService;
   String _selectedModel = 'codegemma';
 
   @override
   void initState() {
     super.initState();
     _ollama = Ollama();
+
+    _hoverTextService = HoverTextService();
+    _hoverTextService.startServer(); // Start WebSocket server
+
+    // Listen to incoming hover text and auto-send it
+    _hoverTextService.textStream.listen((hoveredText) {
+      if (!_isLoading && hoveredText.trim().isNotEmpty) {
+        _messageController.text = hoveredText;
+        _sendMessage(); // Trigger send
+      }
+    });
+
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -71,6 +85,89 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
     _fadeController.dispose();
     _cursorController.dispose();
     super.dispose();
+  }
+
+  void _sendMessageWithoutTyping() async {
+    final userMessage = _messageController.text.trim();
+    if (userMessage.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    // Simulate sending
+    print("Sending: $userMessage");
+
+    // Reset loading & input after delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        _isLoading = false;
+        _messageController.clear();
+      });
+    });
+    setState(() {
+      _messages.add(Message(
+        content: userMessage,
+        isUser: true,
+        timestamp: DateTime.now(),
+      ));
+      _isLoading = true;
+    });
+
+    _scrollToBottom();
+
+    try {
+      setState(() {
+        _messages.add(Message(
+          content: "",
+          isUser: false,
+          timestamp: DateTime.now(),
+          isStreaming: true,
+        ));
+        _isLoading = false;
+      });
+
+      final messageIndex = _messages.length - 1;
+      final stream = _ollama.generate(
+        userMessage,
+        model: _selectedModel,
+      );
+
+      await for (final chunk in stream) {
+        setState(() {
+          _messages[messageIndex] = Message(
+            content: _messages[messageIndex].content + chunk.text,
+            isUser: false,
+            timestamp: _messages[messageIndex].timestamp,
+            isStreaming: true,
+          );
+        });
+        _scrollToBottom();
+      }
+
+      // Mark streaming as complete
+      setState(() {
+        _messages[messageIndex] = Message(
+          content: _messages[messageIndex].content,
+          isUser: false,
+          timestamp: _messages[messageIndex].timestamp,
+          isStreaming: false,
+        );
+      });
+    } catch (e) {
+      setState(() {
+        if (_messages.isNotEmpty && !_messages.last.isUser) {
+          _messages.removeLast();
+        }
+        _messages.add(Message(
+          content:
+              "⚠️ **Connection Error**\n\nI couldn't connect to the Ollama service. Please ensure:\n\n• Ollama is installed and running\n• The model `$_selectedModel` is available\n• Run `ollama pull $_selectedModel` if needed\n\n\`\`\`bash\n# Start Ollama service\nollama serve\n\n# Pull the model\nollama pull $_selectedModel\n\`\`\`",
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+        _isLoading = false;
+      });
+    }
+
+    _scrollToBottom();
   }
 
   Future<void> _sendMessage() async {
@@ -215,14 +312,9 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.secondary,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: isDark
+                          ? const Color.fromARGB(255, 77, 82, 88)
+                          : const Color(0xFFF6F8FA),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -374,21 +466,17 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
                         ),
                         maxLines: null,
                         textInputAction: TextInputAction.send,
-                        onSubmitted: (_) => _sendMessage(),
+                        onSubmitted: (_) => _sendMessageWithoutTyping(),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Container(
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.secondary,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: isDark
+                          ? const Color(0xFF21262D)
+                          : const Color(0xFFF6F8FA),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Material(
@@ -431,17 +519,9 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               color: message.isUser
                   ? (isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA))
-                  : null,
-              gradient: message.isUser
-                  ? null
-                  : LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.secondary,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                  : isDark
+                      ? const Color.fromARGB(255, 77, 82, 88)
+                      : const Color(0xFFF6F8FA),
               borderRadius: BorderRadius.circular(8),
               border: message.isUser
                   ? Border.all(
