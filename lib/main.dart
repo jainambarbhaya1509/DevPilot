@@ -13,18 +13,17 @@ void main() async {
   const Size windowSize = Size(600, 700);
 
   WindowOptions windowOptions = const WindowOptions(
-    size: windowSize,
-    center: true,
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.hidden,
-    alwaysOnTop: true,
-  );
+      size: windowSize,
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+      alwaysOnTop: true,
+      windowButtonVisibility: false);
 
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.setAsFrameless();
     await windowManager.setAlwaysOnTop(true);
-    await windowManager.setIgnoreMouseEvents(false);
     await windowManager.show();
     await windowManager.focus();
   });
@@ -63,7 +62,7 @@ void main() async {
       _scrollUpHotKey = hotKey;
     },
   );
-  
+
   HotKey _scrollDownHotKey = HotKey(
     key: PhysicalKeyboardKey.keyS,
     modifiers: [HotKeyModifier.control],
@@ -111,6 +110,24 @@ void main() async {
     } else {
       await windowManager.setOpacity(0.0);
     }
+  });
+
+  bool isDisabled = true;
+
+  HotKey _toggleMouseEventDisablity = HotKey(
+    key: PhysicalKeyboardKey.keyM,
+    modifiers: [HotKeyModifier.control],
+    scope: HotKeyScope.system,
+  );
+  HotKeyRecorder(
+    onHotKeyRecorded: (hotKey) {
+      _toggleMouseEventDisablity = hotKey;
+    },
+  );
+  await hotKeyManager.register(_toggleMouseEventDisablity,
+      keyDownHandler: (hotKey) async {
+    isDisabled = !isDisabled;
+    await windowManager.setIgnoreMouseEvents(isDisabled, forward: isDisabled);
   });
 }
 
