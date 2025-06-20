@@ -99,13 +99,6 @@ lib/
 
 ---
 
-## 🧑‍💻 Created By
-
-**Jainam Barbhaya**
-🔗 [GitHub](https://github.com/jainambarbhaya1509)
-
----
-
 ## 📜 License
 
 MIT License — do whatever you want, but don't blame me if you get caught using it in a real interview 😄
