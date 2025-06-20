@@ -112,7 +112,7 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
       _isLoading = true;
     });
 
-    _scrollToBottom();
+    // _scrollToBottom();
 
     try {
       setState(() {
@@ -140,7 +140,7 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
             isStreaming: true,
           );
         });
-        _scrollToBottom();
+        // _scrollToBottom();
       }
 
       // Mark streaming as complete
@@ -167,7 +167,7 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
       });
     }
 
-    _scrollToBottom();
+    // _scrollToBottom();
   }
 
   Future<void> _sendMessage() async {
