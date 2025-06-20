@@ -51,9 +51,60 @@ void main() async {
       _hotKeyVisibility = hotKey;
     },
   );
-  bool isVisible = true;
 
-  await hotKeyManager.register(_hotKeyVisibility, keyDownHandler: (hotKey) async {
+  // Register hotkeys for scrolling up and down
+  HotKey _scrollUpHotKey = HotKey(
+    key: PhysicalKeyboardKey.keyW,
+    modifiers: [HotKeyModifier.control],
+    scope: HotKeyScope.system,
+  );
+  HotKeyRecorder(
+    onHotKeyRecorded: (hotKey) {
+      _scrollUpHotKey = hotKey;
+    },
+  );
+  
+  HotKey _scrollDownHotKey = HotKey(
+    key: PhysicalKeyboardKey.keyS,
+    modifiers: [HotKeyModifier.control],
+    scope: HotKeyScope.system,
+  );
+  HotKeyRecorder(
+    onHotKeyRecorded: (hotKey) {
+      _scrollDownHotKey = hotKey;
+    },
+  );
+  await hotKeyManager.register(_scrollUpHotKey, keyDownHandler: (hotKey) {
+    if (scrollController.hasClients) {
+      final newOffset = (scrollController.position.pixels - 100).clamp(
+        0.0,
+        scrollController.position.maxScrollExtent,
+      );
+      scrollController.animateTo(
+        newOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  });
+
+  await hotKeyManager.register(_scrollDownHotKey, keyDownHandler: (hotKey) {
+    if (scrollController.hasClients) {
+      final newOffset = (scrollController.position.pixels + 100).clamp(
+        0.0,
+        scrollController.position.maxScrollExtent,
+      );
+      scrollController.animateTo(
+        newOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  });
+
+  bool isVisible = true;
+  await hotKeyManager.register(_hotKeyVisibility,
+      keyDownHandler: (hotKey) async {
     isVisible = !isVisible;
     if (isVisible) {
       await windowManager.setOpacity(1.0);

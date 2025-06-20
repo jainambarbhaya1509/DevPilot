@@ -6,6 +6,7 @@ import 'connection_status.dart';
 import 'code_block_widget.dart';
 import 'hover_text_service.dart';
 
+final ScrollController scrollController = ScrollController();
 class Message {
   final String content;
   final bool isUser;
@@ -29,7 +30,6 @@ class OllamaChat extends StatefulWidget {
 
 class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
   final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
   final List<Message> _messages = [];
   bool _isLoading = false;
   late AnimationController _fadeController;
@@ -81,7 +81,7 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
   @override
   void dispose() {
     _messageController.dispose();
-    _scrollController.dispose();
+    scrollController.dispose();
     _fadeController.dispose();
     _cursorController.dispose();
     super.dispose();
@@ -245,9 +245,9 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOutCubic,
         );
@@ -400,7 +400,7 @@ class _OllamaChatState extends State<OllamaChat> with TickerProviderStateMixin {
             // Messages
             Expanded(
               child: ListView.builder(
-                controller: _scrollController,
+                controller: scrollController,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 itemCount: _messages.length + (_isLoading ? 1 : 0),
