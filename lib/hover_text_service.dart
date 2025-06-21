@@ -15,7 +15,7 @@ class HoverTextService {
 
   Future<void> startServer({int port = 8080}) async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
-    print("WebSocket server listening on ws://localhost:$port");
+    print("WebSocket server listening on ws://127.0.0.1:$port");
 
     await for (HttpRequest request in server) {
       if (WebSocketTransformer.isUpgradeRequest(request)) {
