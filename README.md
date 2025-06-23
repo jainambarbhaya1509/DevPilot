@@ -1,6 +1,6 @@
-# 🧠 CrackDSA – Your Local AI Copilot for Proctored DSA Rounds (For Fun 😉)
+# 🧠 DevPilot - Your Personal AI Coding Copilot (Offline & Discreet)
 
-**ClearDSA** is a macOS-native desktop chat assistant built with Flutter. It connects to local Ollama LLMs like `llama3`, `mistral`, and `codellama` to provide discreet, offline-friendly help for Data Structures & Algorithms (DSA) challenges—even during proctored coding rounds (strictly for "educational purposes" of course).
+**DevPilot** is a macOS-native desktop assistant built with Flutter that acts as an offline AI companion, connecting to local Ollama models (like Llama3, Mistral, CodeLlama) to streamline my development workflow.
 
 > 🤖 Because sometimes even geniuses need a quiet nudge.
 
@@ -22,9 +22,6 @@
 
 - **Formatted Code Output**  
   Beautified display of code blocks for quick copy-paste.
-
-- **Chrome Tab Or Window Overlay**  
-  Open the chat assistant on top of any coding window without getting caught
 
 ---
 
@@ -52,19 +49,6 @@ cd ClearDSA
 flutter pub get
 flutter run -d macos
 ```
-
----
-
-## 💡 Ideal Use Case
-
-* Running in split-screen beside your browser-based proctored coding test (😉)
-* Typing quick DSA queries like:
-
-  * “Write a recursive solution to generate all balanced parentheses”
-  * “Optimize this O(n²) approach using a hashmap”
-  * “What’s the difference between BFS and DFS?”
-
-> ⚠️ This app does **not** bypass any monitoring or screen sharing tools. Use responsibly.
 
 ---
 
@@ -102,12 +86,5 @@ lib/
 ## 📜 License
 
 MIT License — do whatever you want, but don't blame me if you get caught using it in a real interview 😄
-
----
-
-## ⭐️ Fun Disclaimer
-
-This tool is **for educational and entertainment purposes only**.
-Please respect exam integrity policies. But hey... what you do on localhost stays on localhost.
 
 ---
